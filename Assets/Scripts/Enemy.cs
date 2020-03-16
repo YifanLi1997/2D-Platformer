@@ -10,13 +10,17 @@ public class Enemy : MonoBehaviour
     [SerializeField] int deathScore = 10;
     [SerializeField] AudioClip deathSFX;
 
+    [SerializeField] float deathDelayInSecond = 10f;
+
     Rigidbody2D m_rb;
+    BoxCollider2D m_boxCollider;
     ScoreSystem m_scoreSystem;
 
     void Start()
     {
         m_scoreSystem = FindObjectOfType<ScoreSystem>();
         m_rb = GetComponent<Rigidbody2D>();
+        m_boxCollider = GetComponent<BoxCollider2D>();
         m_rb.velocity = Vector2.right * speed;
     }
 
@@ -25,7 +29,7 @@ public class Enemy : MonoBehaviour
     {
         RaycastHit2D xHit = Physics2D.Raycast(transform.position, new Vector2(isFacingRight, 0));
 
-        if (xHit.distance < raycastThreshold)
+        if (xHit && xHit.distance < raycastThreshold)
         {
             if (xHit.collider.CompareTag("Player"))
             {
@@ -40,7 +44,11 @@ public class Enemy : MonoBehaviour
     {
         AudioSource.PlayClipAtPoint(deathSFX, Camera.main.transform.position);
         m_scoreSystem.AddScore(deathScore);
-        Destroy(gameObject);
+
+        m_rb.velocity = new Vector2(m_rb.velocity.x, -1 * speed);
+        m_boxCollider.enabled = false;
+
+        Destroy(gameObject, deathDelayInSecond);
     }
 
 }

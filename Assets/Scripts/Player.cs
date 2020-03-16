@@ -52,7 +52,7 @@ public class Player : MonoBehaviour
         // kill enemy
         RaycastHit2D YHit = Physics2D.Raycast(transform.position,  Vector2.down);
 
-        if (YHit.distance < raycastThreshold && YHit.collider.CompareTag("Enemy"))
+        if (YHit && YHit.distance < raycastThreshold && YHit.collider.CompareTag("Enemy"))
         {
             YHit.collider.GetComponent<Enemy>().EnemyKilled();
             m_rb.AddForce(Vector2.up * bouncePower);

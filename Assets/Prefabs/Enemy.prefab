@@ -70,7 +70,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 21300000, guid: 5b7576ad5491440ad97ec05ed24caaaa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -96,7 +96,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   isFacingRight: 1
-  raycastThreshold: 0.5
+  raycastThreshold: 0.7
   deathScore: 10
   deathSFX: {fileID: 8300000, guid: a2f2fe63d074c44689ddee35c8540dee, type: 3}
 --- !u!61 &7386158188423462533
