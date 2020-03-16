@@ -5,13 +5,17 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] float speed = 5f;
-    [SerializeField] bool isFacingRight = true;
-    [SerializeField] float detectionThreshold = 0.7f;
+    [SerializeField] int isFacingRight = 1;
+    [SerializeField] float raycastThreshold = 0.7f;
+    [SerializeField] int deathScore = 10;
+    [SerializeField] AudioClip deathSFX;
 
     Rigidbody2D m_rb;
+    ScoreSystem m_scoreSystem;
 
     void Start()
     {
+        m_scoreSystem = FindObjectOfType<ScoreSystem>();
         m_rb = GetComponent<Rigidbody2D>();
         m_rb.velocity = Vector2.right * speed;
     }
@@ -19,28 +23,24 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(m_rb.velocity);
+        RaycastHit2D xHit = Physics2D.Raycast(transform.position, new Vector2(isFacingRight, 0));
 
-        RaycastHit2D xHit;
-        if (isFacingRight)
+        if (xHit.distance < raycastThreshold)
         {
-            xHit = Physics2D.Raycast(transform.position, Vector2.right);
-            if (xHit.distance < detectionThreshold)
+            if (xHit.collider.CompareTag("Player"))
             {
-                isFacingRight = !isFacingRight;
-                m_rb.velocity = Vector2.left * speed;
+                xHit.collider.GetComponent<Player>().PlayerDeath();
             }
+            isFacingRight *= -1;
+            m_rb.velocity = new Vector2(isFacingRight, 0) * speed;
         }
-        else
-        {
-            xHit = Physics2D.Raycast(transform.position, Vector2.left);
-            if (xHit.distance < detectionThreshold)
-            {
-                isFacingRight = !isFacingRight;
-                m_rb.velocity = Vector2.right * speed;
-            }
-        }
-
-
     }
+
+    public void EnemyKilled()
+    {
+        AudioSource.PlayClipAtPoint(deathSFX, Camera.main.transform.position);
+        m_scoreSystem.AddScore(deathScore);
+        Destroy(gameObject);
+    }
+
 }

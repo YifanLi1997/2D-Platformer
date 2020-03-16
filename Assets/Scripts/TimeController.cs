@@ -30,6 +30,7 @@ public class TimeController : MonoBehaviour
             TimeOut();
         }
 
+        // TODO: change to a button
         if (Input.GetKeyDown(KeyCode.R))
         {
             SceneManager.LoadScene("Level 1");

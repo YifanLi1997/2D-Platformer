@@ -6,10 +6,16 @@ using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
+    [Header("Physics")]
     [SerializeField] float playerSpeed = 10f;
-    [SerializeField] float jumpPower = 10f;
+    [SerializeField] float jumpPower = 300f;
+    [Tooltip("Bounce after killing an enemy")] [SerializeField] float bouncePower = 100f;
     [SerializeField] float minVelocity = -3.5f;
     [SerializeField] float maxVelocity = 3.5f;
+
+    [Header("Inner params")]
+    [SerializeField] float raycastThreshold = 0.7f;
+    [SerializeField] GameObject deathPanel;
 
     float m_moveInput;
     bool m_isFacingRight = true;
@@ -21,21 +27,43 @@ public class Player : MonoBehaviour
         m_rb = GetComponent<Rigidbody2D>();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         DeathDetection();
+        RaycastDetection();
+
+        // TODO: change to a button
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene("Level 1");
+            Time.timeScale = 1;
+        }
+    }
+
+    void FixedUpdate()
+    {
         GetInput();
         DirectionControl();
         MovementControl();
+    }
+
+    private void RaycastDetection()
+    {
+        // kill enemy
+        RaycastHit2D YHit = Physics2D.Raycast(transform.position,  Vector2.down);
+
+        if (YHit.distance < raycastThreshold && YHit.collider.CompareTag("Enemy"))
+        {
+            YHit.collider.GetComponent<Enemy>().EnemyKilled();
+            m_rb.AddForce(Vector2.up * bouncePower);
+        }
     }
 
     private void DeathDetection()
     {
         if (transform.position.y < -5.5)
         {
-            Debug.Log("You die.");
-            SceneManager.LoadScene("Level 1");
-            // TODO: within certain times, reinistiate
+            PlayerDeath();
         }
     }
 
@@ -69,14 +97,17 @@ public class Player : MonoBehaviour
 
     private void MovementControl()
     {
-        m_rb.AddForce(Vector2.right * m_moveInput * playerSpeed);
-        if (m_moveInput < 0f)
+        if (Mathf.Abs(m_moveInput) > 0.6f)
         {
-            SetSpeedLimitsTowardsLeft();
-        }
-        else if (m_moveInput > 0f)
-        {
-            SetSpeedLimitsTowardsRight();
+            m_rb.AddForce(Vector2.right * m_moveInput * playerSpeed);
+            if (m_moveInput < 0f)
+            {
+                SetSpeedLimitsTowardsLeft();
+            }
+            else if (m_moveInput > 0f)
+            {
+                SetSpeedLimitsTowardsRight();
+            }
         }
     }
 
@@ -109,5 +140,11 @@ public class Player : MonoBehaviour
     {
         m_isFacingRight = !m_isFacingRight;
         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+    }
+
+    public void PlayerDeath()
+    {
+        deathPanel.SetActive(true);
+        Time.timeScale = 0;
     }
 }
