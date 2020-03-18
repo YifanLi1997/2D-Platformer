@@ -50,11 +50,11 @@ public class Player : MonoBehaviour
     private void RaycastDetection()
     {
         // kill enemy
-        RaycastHit2D YHit = Physics2D.Raycast(transform.position,  Vector2.down);
+        RaycastHit2D YDownHit = Physics2D.Raycast(transform.position,  Vector2.down);
 
-        if (YHit && YHit.distance < raycastThreshold && YHit.collider.CompareTag("Enemy"))
+        if (YDownHit && YDownHit.distance < raycastThreshold && YDownHit.collider.CompareTag("Enemy"))
         {
-            YHit.collider.GetComponent<Enemy>().EnemyKilled();
+            YDownHit.collider.GetComponent<Enemy>().EnemyKilled();
             m_rb.AddForce(Vector2.up * bouncePower);
         }
     }
